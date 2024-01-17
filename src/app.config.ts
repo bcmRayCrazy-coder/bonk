@@ -27,6 +27,10 @@ export default config({
             );
         });
 
+        app.get('/ping', (req, res) => {
+            res.status(200).send('pong');
+        });
+
         /**
          * Use @colyseus/playground
          * (It is not recommended to expose this route in a production environment)
