@@ -11,9 +11,21 @@ export class MyRoom extends Room<MyRoomState> {
 
         this.onMessage('updatePosition', (client, data) => {
             const player = this.state.players.get(client.sessionId);
+            if (!player.alive) return;
             player.x = data.x;
             player.y = data.y;
             player.z = data.z;
+            if (player.y < -2) {
+                console.log(client.sessionId, 'die');
+                player.alive = false;
+                this.broadcast('die', { sessionId: client.sessionId });
+                var alive = 0;
+                this.state.players.forEach((player) => {
+                    if (player.alive) alive += 1;
+                });
+                this.state.alive = alive;
+                if (alive == 0) this.disconnect(4001);
+            }
             this.state.players.set(client.sessionId, player);
         });
         this.onMessage('updateForce', (client, data) => {
@@ -34,11 +46,13 @@ export class MyRoom extends Room<MyRoomState> {
         player.z = -(this.floorSize / 2) + Math.random() * this.floorSize;
 
         this.state.players.set(client.sessionId, player);
+        this.state.alive += 1;
     }
 
     onLeave(client: Client, consented: boolean) {
         console.log(client.sessionId, 'left!');
         this.state.players.delete(client.sessionId);
+        this.state.alive -= 1;
     }
 
     onDispose() {
