@@ -17,11 +17,10 @@ export class MyRoom extends Room<MyRoomState> {
             this.state.players.set(client.sessionId, player);
         });
         this.onMessage('updateForce', (client, data) => {
-            const player = this.state.players.get(client.sessionId);
-            player.forceX = data.x;
-            player.forceY = data.y;
-            player.forceZ = data.z;
-            this.state.players.set(client.sessionId, player);
+            this.broadcast('force', {
+                sessionId: client.sessionId,
+                force: data,
+            });
         });
     }
 
