@@ -2,6 +2,7 @@ import config from '@colyseus/tools';
 import { monitor } from '@colyseus/monitor';
 import { playground } from '@colyseus/playground';
 import path from 'path';
+import express from 'express';
 
 /**
  * Import your Room files
@@ -27,6 +28,8 @@ export default config({
             );
         });
 
+        app.use(express.static(path.join(__dirname, '../play')));
+
         app.get('/ping', (req, res) => {
             res.status(200).send('pong');
         });
@@ -35,9 +38,9 @@ export default config({
          * Use @colyseus/playground
          * (It is not recommended to expose this route in a production environment)
          */
-        if (process.env.NODE_ENV !== 'production') {
-            app.use('/', playground);
-        }
+        // if (process.env.NODE_ENV !== 'production') {
+            // app.use('/', playground);
+        // }
 
         /**
          * Use @colyseus/monitor
